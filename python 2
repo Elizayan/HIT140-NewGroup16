@@ -1,0 +1,33 @@
+import pandas as pd
+import matplotlib.pyplot as plt
+
+# Load the data from the CSV file 
+file_path = 'merged_dataset.csv'
+data = pd.read_csv(file_path)
+
+# Select the relevant columns to create graph
+columns_to_plot = ['Optm', 'Usef', 'Relx', 'Intp', 'Engs', 'Dealpr', 
+                   'Thcklr', 'Goodme', 'Clsep', 'Mkmind', 'Loved', 
+                   'Intthg', 'Cheer']
+
+# Group by 'gender' and calculate the mean for each column
+grouped_data = data.groupby('gender')[columns_to_plot].mean()
+
+# Plotting the bar chart
+grouped_data.T.plot(kind='bar', figsize=(15, 8), width=0.8)
+
+# Adding titles and labels
+plt.title('Average Scores by Gender')
+plt.xlabel('Attributes')
+plt.ylabel('Average Score')
+plt.xticks(rotation=45, ha='right')
+plt.legend(title='Gender', loc='upper right')
+plt.grid(axis='y', linestyle='--', alpha=0.7)
+plt.tight_layout()
+
+# Show the plot
+plt.show()
+
+
+
+

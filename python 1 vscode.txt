@@ -1,0 +1,61 @@
+import pandas as pd
+import matplotlib.pyplot as plt
+import numpy as np
+
+dataset1 = pd.read_csv('dataset1.csv')
+dataset2 = pd.read_csv('dataset3.csv')
+
+dataset1 = dataset1.sort_values(by='ID')
+dataset2 = dataset2.sort_values(by='ID')
+
+merged_data = pd.merge(dataset1, dataset2, on='ID')
+
+merged_data.to_csv('merged_data 1and3.csv', index=False)
+
+data = pd.read_csv('merged_data 1and3.csv')
+
+# Set up the colors we'll use in the charts
+gender_color = ['#99CCFF', '#FFCC99']
+minority_color = ['#99CCFF', '#FFCC99']
+deprived_color = ['#99CCFF', '#FFCC99']
+
+# We need to reshape the data from wide format to long format so we can easily plot it
+data_long = pd.melt(data, id_vars=['ID', 'gender', 'minority', 'deprived'],
+                    value_vars=['Optm', 'Usef', 'Relx', 'Intp', 'Engs', 'Dealpr', 
+                                'Goodme', 'Clsep', 'Conf', 'Mkmind', 'Loved', 'Intthg', 'Cheer'],
+                    var_name='variable', value_name='value')
+
+
+# Let's make a function that adds percentage labels to the bars in our charts
+def add_percentage_labels(ax):
+    for p in ax.patches:
+        width = p.get_width()
+        height = p.get_height()
+        x = p.get_x()
+        y = p.get_y()
+
+        # Calculate the percentage of each bar relative to the total height of the stack
+        total_height = np.sum([rect.get_height() for rect in ax.patches if rect.get_x() == x])
+        percentage = f'{height / total_height * 100:.1f}%'
+
+        # Add the percentage label inside each bar
+        ax.annotate(percentage,
+                    (x + width / 2., y + height / 2.),
+                    ha='center', va='center', fontsize=10, color='black')
+
+
+# Now let's create a stacked bar chart for gender and screen time
+gender_avg = data_long.groupby(['variable', 'gender'])['value'].mean().unstack()
+ax1 = gender_avg.plot(kind='bar', stacked=True, color=gender_color, figsize=(10, 6))
+plt.title('Average Screen Time by Gender')
+plt.xlabel('Screen Time Activity')
+plt.ylabel('Average Hours')
+plt.legend(['Male', 'Female'], title='Gender')
+add_percentage_labels(ax1)
+plt.show()
+
+
+
+
+
+
